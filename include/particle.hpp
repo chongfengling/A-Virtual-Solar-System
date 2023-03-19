@@ -9,6 +9,7 @@ public:
     Eigen::Vector3d getVelocity();
     Eigen::Vector3d getAcceleration();
     const double getMass();
+    void update(double dt);
     void setAcceleration(Eigen::Vector3d acceleration);
     void setVelocity(Eigen::Vector3d velocity);
     void setPosition(Eigen::Vector3d position);

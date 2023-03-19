@@ -29,6 +29,12 @@ const double Particle::getMass()
     return this->mass;
 }
 
+void Particle::update(double dt)
+{
+    this->position += this->velocity * dt;
+    this->velocity += this->acceleration * dt;
+}
+
 void Particle::setAcceleration(Eigen::Vector3d acceleration)
 {
     this->acceleration = acceleration;
