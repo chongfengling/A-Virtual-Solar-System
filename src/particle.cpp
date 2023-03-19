@@ -50,6 +50,21 @@ void Particle::setPosition(Eigen::Vector3d position)
     this->position = position;
 }
 
+void Particle::updateAcceleration(std::vector<Particle> p_list, double epsilon)
+{
+    Eigen::Vector3d acceleration_sum{0, 0, 0};
+    for (Particle p : p_list)
+    {
+        // check if p is the same particle as *this
+        // when ==, why output is nan * 3?
+        if (p.getPosition() != this->getPosition())
+        {
+            acceleration_sum += calcAcceleration(*this, p, epsilon);
+        }
+    }
+    this->acceleration = acceleration_sum;
+}
+
 // return the acceleration of p1 due to p2
 Eigen::Vector3d calcAcceleration(Particle p1, Particle p2, double epsilon = 0)
 {
