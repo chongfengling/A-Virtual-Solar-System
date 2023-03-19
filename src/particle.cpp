@@ -29,9 +29,20 @@ const double Particle::getMass()
     return this->mass;
 }
 
-Particle::Particle(double in_mass) :
-    mass{in_mass}
-    {}
+void Particle::setAcceleration(Eigen::Vector3d acceleration)
+{
+    this->acceleration = acceleration;
+}
+
+void Particle::setVelocity(Eigen::Vector3d velocity)
+{
+    this->velocity = velocity;
+}
+
+void Particle::setPosition(Eigen::Vector3d position)
+{
+    this->position = position;
+}
 
 double Particle::getMass() const {
     return mass;
