@@ -20,3 +20,5 @@ private:
     Eigen::Vector3d velocity;
     Eigen::Vector3d acceleration;
 };
+
+Eigen::Vector3d calcAcceleration(Particle p1, Particle p2, double epsilon);
