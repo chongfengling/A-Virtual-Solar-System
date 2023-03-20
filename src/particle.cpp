@@ -1,6 +1,7 @@
 #include "particle.hpp"
 #include <Eigen/Core>
 #include <cmath>
+#include <iostream>
 
 Particle::Particle(double in_mass) : mass{in_mass}
 {
@@ -70,7 +71,6 @@ Eigen::Vector3d calcAcceleration(Particle p1, Particle p2, double epsilon = 0)
 {
     Eigen::Vector3d r_vec = p2.getPosition() - p1.getPosition();
     double r_norm = r_vec.norm();
-
-    Eigen::Vector3d acceleration = p2.getMass() * r_vec / pow(pow(r_norm, 2) + pow(epsilon, 2), 3 / 2);
+    Eigen::Vector3d acceleration = p2.getMass() * r_vec / pow(pow(r_norm, 2) + pow(epsilon, 2), 1.5);
     return acceleration;
 }

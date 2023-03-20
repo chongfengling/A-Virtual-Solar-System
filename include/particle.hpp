@@ -14,7 +14,7 @@ public:
     void setVelocity(Eigen::Vector3d velocity);
     void setPosition(Eigen::Vector3d position);
 
-    void updateAcceleration(std::vector<Particle> p_list, double epsilon = 0);
+    void updateAcceleration(std::vector<Particle> p_list, double epsilon = 1);
 
 private:
     const double mass;
