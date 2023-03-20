@@ -1,5 +1,6 @@
-#include "particle.hpp"
-#include <Eigen/Core>
+// #include "particle.hpp"
+#include "/workspaces/PHAS0100/a-virtual-solar-system-chongfengling/include/particle.hpp"
+#include "/usr/include/eigen3/Eigen/Core"
 #include <cmath>
 #include <iostream>
 
@@ -74,3 +75,10 @@ Eigen::Vector3d calcAcceleration(Particle p1, Particle p2, double epsilon = 0)
     Eigen::Vector3d acceleration = p2.getMass() * r_vec / pow(pow(r_norm, 2) + pow(epsilon, 2), 1.5);
     return acceleration;
 }
+
+// // main function
+// int main(int argc, char* argv[])
+// {
+//     std::cout << "Hello World!\n";
+//     return 0;
+// }

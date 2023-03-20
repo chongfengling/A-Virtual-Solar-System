@@ -1,4 +1,4 @@
-#include <Eigen/Core>
+#include "/usr/include/eigen3/Eigen/Core"
 
 class Particle
 {
