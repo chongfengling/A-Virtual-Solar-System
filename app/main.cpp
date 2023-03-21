@@ -2,19 +2,6 @@
 #include "/usr/include/eigen3/Eigen/Core"
 #include "CLI11.hpp"
 #include "/workspaces/PHAS0100/a-virtual-solar-system-chongfengling/include/particle.hpp"
-#include <random>
-
-std::vector<Particle> initialize_Solar_System()
-{
-    // All the particles are stored in a vector, in order of Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune
-    std::vector<Particle> p_list;
-    return p_list;
-}
-
-std::vector<Particle> update_Solar_System(std::vector<Particle> Solar_System, double dt, double total_time, int n_steps)
-{
-    return Solar_System;
-}
 
 int main(int argc, char **argv)
 {
@@ -66,8 +53,6 @@ int main(int argc, char **argv)
         std::cerr << "Error: ht is required, please refer to the help information '-h'." << std::endl;
         return 1;
     }
-
-    // std::vector<Particle> initial_solar_system;
 
     std::vector<Particle> initial_solar_system = initialize_Solar_System();
 

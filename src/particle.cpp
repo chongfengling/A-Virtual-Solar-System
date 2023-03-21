@@ -3,6 +3,7 @@
 #include "/usr/include/eigen3/Eigen/Core"
 #include <cmath>
 #include <iostream>
+#include <random>
 
 Particle::Particle(double in_mass) : mass{in_mass}
 {
@@ -76,9 +77,15 @@ Eigen::Vector3d calcAcceleration(Particle p1, Particle p2, double epsilon = 0)
     return acceleration;
 }
 
-// // main function
-// int main(int argc, char* argv[])
-// {
-//     std::cout << "Hello World!\n";
-//     return 0;
-// }
+std::vector<Particle> initialize_Solar_System()
+{
+    // All the particles are stored in a vector, in order of Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune
+    std::vector<Particle> p_list;
+
+    return p_list;
+}
+
+std::vector<Particle> update_Solar_System(std::vector<Particle> Solar_System, double dt, double total_time, int n_steps)
+{
+    return Solar_System;
+}
