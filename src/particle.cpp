@@ -125,3 +125,38 @@ std::vector<Particle> update_Solar_System(std::vector<Particle> Solar_System, do
     }
     return Solar_System;
 }
+
+void run_Solar_System_in_one_year()
+{
+    // Simulation of the real solar system for one year
+    // initialize the solar system
+    std::vector<Particle> initial_solar_system = initialize_Solar_System();
+    // print the initial position of planets in the solar system
+    for (int i = 1; i < initial_solar_system.size(); i++)
+    {
+        std::cout << "initial position of "
+                  << i
+                  << "th planet: "
+                  << std::endl
+                  << initial_solar_system[i].getPosition()
+                  << std::endl;
+    }
+
+    // define the time step and total time
+    double dt(0.0001);
+    double total_time(2 * M_PI);
+    int n_steps(total_time / dt);
+    // update the solar system
+    std::vector<Particle> updated_solar_system = update_Solar_System(initial_solar_system, dt, total_time, n_steps);
+    // print the final position of planets in the solar system
+    for (int i = 1; i < updated_solar_system.size(); i++)
+    {
+        std::cout << "final position of "
+                  << i
+                  << "th planet after one year and dt = "
+                  << dt
+                  << std::endl
+                  << updated_solar_system[i].getPosition()
+                  << std::endl;
+    }
+}
