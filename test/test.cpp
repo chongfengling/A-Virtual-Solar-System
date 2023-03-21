@@ -1,6 +1,6 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
-#include "/workspaces/PHAS0100/a-virtual-solar-system-chongfengling/include/particle.hpp"
+#include "particle.hpp"
 #include <iostream>
 
 using Catch::Matchers::WithinRel;

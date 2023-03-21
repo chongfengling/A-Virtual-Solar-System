@@ -1,6 +1,5 @@
-// #include "particle.hpp"
-#include "/workspaces/PHAS0100/a-virtual-solar-system-chongfengling/include/particle.hpp"
-#include "/usr/include/eigen3/Eigen/Core"
+#include "particle.hpp"
+#include <Eigen/Core>
 #include <cmath>
 #include <iostream>
 #include <random>
