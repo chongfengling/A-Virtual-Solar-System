@@ -110,3 +110,31 @@ TEST_CASE("Gravitational force due to two opposite particles", "[Gravity]")
     bool acceleration_correctness = p0.getAcceleration().isApprox(expected_acceleration, 0.01);
     REQUIRE(acceleration_correctness);
 }
+
+TEST_CASE("a simple Solar System (the Sun and the Earth only)", "[the Solar System]")
+{
+    std::cout << "a simple Solar System" << std::endl;
+    std::vector<Particle> initial_solar_system;
+    // add the Sun
+    initial_solar_system.push_back(Particle(1, Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(0, 0, 0)));
+    // add the Earth
+    double r = 1;
+    double theta = 2023;
+    initial_solar_system.push_back(
+        Particle(
+            1. / 332946.038,                                  // relative mass
+            {r * sin(theta), r * cos(theta), 0},              // position (0, 1, 0)
+            {-cos(theta) / sqrt(r), sin(theta) / sqrt(r), 0}, // velocity (-1, 0, 0)
+            {0, 0, 0}));                                      // acceleration is zero, updated in the first loop
+    // one year after
+    double dt(0.0001);
+    double total_time(2 * M_PI);
+    int n_steps(total_time / dt);
+    // update the solar system
+    std::vector<Particle> updated_solar_system = update_Solar_System(initial_solar_system, dt, total_time, n_steps);
+    // After a time of 2Pi, the Earth should be back to its initial position
+    Eigen::Vector3d expected_position_final{r * sin(theta), r * cos(theta), 0};
+    bool earth_back_to_initial_pos = updated_solar_system[1].getPosition().isApprox(expected_position_final, 0.01);
+    REQUIRE(earth_back_to_initial_pos);
+
+}
