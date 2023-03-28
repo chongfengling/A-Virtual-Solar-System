@@ -53,16 +53,16 @@ void Particle::setPosition(Eigen::Vector3d position)
     this->position = position;
 }
 
-void Particle::updateAcceleration(std::vector<Particle> p_list, double epsilon)
+void Particle::updateAcceleration(const std::vector<std::shared_ptr<Particle>> &p_list, double epsilon)
 {
     Eigen::Vector3d acceleration_sum{0, 0, 0};
-    for (Particle p : p_list)
+    for (const auto& p : p_list) //why const auto& p? especially const? ans: change the variable in this only 
     {
         // check if p is the same particle as *this
         // when ==, why output is nan * 3?
-        if (p.getPosition() != this->getPosition())
+        if (p->getPosition() != this->getPosition())
         {
-            acceleration_sum += calcAcceleration(*this, p, epsilon);
+            acceleration_sum += calcAcceleration(*this, *p, epsilon); // why *this?
         }
     }
     this->acceleration = acceleration_sum;

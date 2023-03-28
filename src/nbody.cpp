@@ -6,7 +6,8 @@
 #include <random>
 
 // return the acceleration of p1 due to p2
-Eigen::Vector3d calcAcceleration(Particle p1, Particle p2, double epsilon = 0)
+Eigen::Vector3d calcAcceleration(Particle &p1, Particle &p2, double epsilon) // no default value for epsilon. 
+// ! Why not shared_ptr? why shared_ptr in other functions?
 {
     Eigen::Vector3d r_vec = p2.getPosition() - p1.getPosition();
     double r_norm = r_vec.norm();
@@ -14,10 +15,10 @@ Eigen::Vector3d calcAcceleration(Particle p1, Particle p2, double epsilon = 0)
     return acceleration;
 }
 
-std::vector<Particle> initialize_Solar_System()
+std::vector<std::shared_ptr<Particle>> initialize_Solar_System()
 {
     // All the particles are stored in a vector, in order of Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune
-    std::vector<Particle> p_list;
+    std::vector<std::shared_ptr<Particle>> p_list;
     // vector of masses of planets, sun = 1
     std::vector<double> masses{1. / 6023600, 1. / 408524, 1. / 332946.038, 1. / 3098710, 1. / 1047.55, 1. / 3499, 1. / 22962, 1. / 19352};
     // vector of distances of planets, earth = 1
@@ -31,22 +32,23 @@ std::vector<Particle> initialize_Solar_System()
         angles.push_back(distribution(rng_mt));
     }
     // create the sun and append to the vector
-    p_list.push_back(Particle(1, Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(0, 0, 0)));
+    p_list.push_back(std::make_shared<Particle>(1, Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(0, 0, 0)));
 
     // create planets and append to the vector
     for (int i = 0; i < 8; i++)
     {
         p_list.push_back(
-            Particle(masses[i],
-                     Eigen::Vector3d(distances[i] * sin(angles[i]), distances[i] * cos(angles[i]), 0),
-                     Eigen::Vector3d(-cos(angles[i]) / sqrt(distances[0]), sin(angles[i]) / sqrt(distances[i]), 0),
-                     Eigen::Vector3d(0, 0, 0)));
+            std::make_shared<Particle>(
+                masses[i],
+                Eigen::Vector3d(distances[i] * sin(angles[i]), distances[i] * cos(angles[i]), 0),
+                Eigen::Vector3d(-cos(angles[i]) / sqrt(distances[0]), sin(angles[i]) / sqrt(distances[i]), 0),
+                Eigen::Vector3d(0, 0, 0)));
     }
 
     return p_list;
 }
 
-std::vector<Particle> update_Solar_System(std::vector<Particle> Solar_System, double dt, double total_time, int n_steps)
+std::vector<std::shared_ptr<Particle>> update_Solar_System(std::vector<std::shared_ptr<Particle>> Solar_System, double dt, double total_time, int n_steps)
 {
     for (int n = 0; n < n_steps; n++)
     {
@@ -54,12 +56,12 @@ std::vector<Particle> update_Solar_System(std::vector<Particle> Solar_System, do
         for (int i = 0; i < Solar_System.size(); i++)
         {
             // ? What is epsilon, 0 or 1? 0 works for test case 'a simple Solar System (the Sun and the Earth only)'
-            Solar_System[i].updateAcceleration(Solar_System, 0);
+            Solar_System[i]->updateAcceleration(Solar_System, 0);
         }
         // update the position and velocity of each body
         for (int j = 0; j < Solar_System.size(); j++)
         {
-            Solar_System[j].update(dt);
+            Solar_System[j]->update(dt);
         }
     }
     return Solar_System;
@@ -69,7 +71,7 @@ void run_Solar_System_in_one_year()
 {
     // Simulation of the real solar system for one year
     // initialize the solar system
-    std::vector<Particle> initial_solar_system = initialize_Solar_System();
+    std::vector<std::shared_ptr<Particle>> initial_solar_system = initialize_Solar_System();   
     // print the initial position of planets in the solar system
     for (int i = 1; i < initial_solar_system.size(); i++)
     {
@@ -77,7 +79,7 @@ void run_Solar_System_in_one_year()
                   << i
                   << "th planet: "
                   << std::endl
-                  << initial_solar_system[i].getPosition()
+                  << initial_solar_system[i]->getPosition()
                   << std::endl;
     }
 
@@ -86,7 +88,7 @@ void run_Solar_System_in_one_year()
     double total_time(2 * M_PI);
     int n_steps(total_time / dt);
     // update the solar system
-    std::vector<Particle> updated_solar_system = update_Solar_System(initial_solar_system, dt, total_time, n_steps);
+    std::vector<std::shared_ptr<Particle>> updated_solar_system = update_Solar_System(initial_solar_system, dt, total_time, n_steps);
     // print the final position of planets in the solar system
     for (int i = 1; i < updated_solar_system.size(); i++)
     {
@@ -95,7 +97,7 @@ void run_Solar_System_in_one_year()
                   << "th planet after one year and dt = "
                   << dt
                   << std::endl
-                  << updated_solar_system[i].getPosition()
+                  << updated_solar_system[i]->getPosition()
                   << std::endl;
     }
 }

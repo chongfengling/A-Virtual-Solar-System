@@ -1,4 +1,5 @@
 #include <Eigen/Core>
+#include <memory>
 
 class Particle
 {
@@ -13,8 +14,7 @@ public:
     void setAcceleration(Eigen::Vector3d acceleration);
     void setVelocity(Eigen::Vector3d velocity);
     void setPosition(Eigen::Vector3d position);
-
-    void updateAcceleration(std::vector<Particle> p_list, double epsilon = 1);
+    void updateAcceleration(const std::vector<std::shared_ptr<Particle>>& p_list, double epsilon);
 
 private:
     const double mass;
