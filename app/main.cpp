@@ -55,13 +55,13 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    std::vector<Particle> initial_solar_system = initialize_Solar_System();
+    std::vector<std::shared_ptr<Particle>> initial_solar_system = initialize_Solar_System();
 
-    std::vector<Particle> updated_solar_system = update_Solar_System(initial_solar_system, dt, total_time, n_steps);
+    std::vector<std::shared_ptr<Particle>> updated_solar_system = update_Solar_System(initial_solar_system, dt, total_time, n_steps);
 
     std::cout << "Hello World!\n"
               << std::endl;
 
-    // run_Solar_System_in_one_year();
+    run_Solar_System_in_one_year();
     return 0;
 }
