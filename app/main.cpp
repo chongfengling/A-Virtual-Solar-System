@@ -2,6 +2,7 @@
 #include "/usr/include/eigen3/Eigen/Core"
 #include "CLI11.hpp"
 #include "particle.hpp"
+#include "nbody.hpp"
 
 int main(int argc, char **argv)
 {
