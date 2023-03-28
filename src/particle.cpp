@@ -115,7 +115,8 @@ std::vector<Particle> update_Solar_System(std::vector<Particle> Solar_System, do
         // update the gravitational acceleration of each body
         for (int i = 0; i < Solar_System.size(); i++)
         {
-            Solar_System[i].updateAcceleration(Solar_System, 1);
+            // ? What is epsilon, 0 or 1? 0 works for test case 'a simple Solar System (the Sun and the Earth only)'
+            Solar_System[i].updateAcceleration(Solar_System, 0);
         }
         // update the position and velocity of each body
         for (int j = 0; j < Solar_System.size(); j++)
@@ -134,7 +135,7 @@ void run_Solar_System_in_one_year()
     // print the initial position of planets in the solar system
     for (int i = 1; i < initial_solar_system.size(); i++)
     {
-        std::cout << "initial position of "
+        std::cout << "initial position of the "
                   << i
                   << "th planet: "
                   << std::endl
