@@ -13,21 +13,21 @@ Particle::Particle(double in_mass, Eigen::Vector3d position, Eigen::Vector3d vel
 {
 }
 
-Eigen::Vector3d Particle::getPosition()
+Eigen::Vector3d& Particle::getPosition()
 {
     return this->position;
 }
 
-Eigen::Vector3d Particle::getVelocity()
+Eigen::Vector3d& Particle::getVelocity()
 {
     return this->velocity;
 }
 
-Eigen::Vector3d Particle::getAcceleration()
+Eigen::Vector3d& Particle::getAcceleration()
 {
     return this->acceleration;
 }
-const double Particle::getMass()
+const double& Particle::getMass()
 {
     return this->mass;
 }
