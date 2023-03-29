@@ -51,3 +51,38 @@ You should fill in the instructions for using the app here.
 ## Credits
 
 This project is maintained by Dr. Jamie Quinn as part of UCL ARC's course, Research Computing in C++.
+
+## Report
+### Energy changed after 100 years of simulation with different time steps dt
+1. dt = 1
+    ```
+    build/solarSystemSimulator --dt 1 --yt 100
+    // total energy of the solar system at the beginning is -0.000112416
+    // total energy of the solar system after 100 years with dt = 1 is -2.7138e-05
+    // total energy increased during this period is 8.52779e-05
+    ```
+2. dt = 0.1
+    ```
+    build/solarSystemSimulator --dt 0.1 --yt 100
+    // total energy of the solar system at the beginning is -0.000112423
+    // total energy of the solar system after 100 years with dt = 0.1 is -7.49152e-05
+    // total energy increased during this period is 3.7508e-05
+    ```
+3. dt = 0.01
+    ```
+    build/solarSystemSimulator --dt 0.001 --yt 100
+    // total energy of the solar system at the beginning is -0.000112435
+    // total energy of the solar system after 100 years with dt = 0.001 is -0.00010983
+    // total energy increased during this period is 2.60468e-06
+    ```
+4. dt = 0.001
+    ```
+    build/solarSystemSimulator --dt 0.0001 --yt 100
+    // total energy of the solar system at the beginning is -0.000112414
+    // total energy of the solar system after 100 years with dt = 0.0001 is -0.000111693
+    // total energy increased during this period is 7.21498e-07
+    ```
+5. dt = 5
+6. dt = 0.5
+7. dt = 0.05
+8. dt = 0.005

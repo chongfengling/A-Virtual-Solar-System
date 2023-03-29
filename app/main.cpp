@@ -11,12 +11,12 @@ int main(int argc, char **argv)
     std::string version = "0.1.0";
     app.set_version_flag("--version", version);
     // delta time required
-    double dt;
+    double dt(-1);
     app.add_option("--dt, --delta_time", dt, "Time step for simulation")->check(CLI::PositiveNumber);
     // use either total time or number of steps
-    double total_time;
-    app.add_option("--tt, --total_time", total_time, "Total time for simulation")->check(CLI::PositiveNumber);
-    int n_steps = -1;
+    double year_time(-1);
+    app.add_option("--yt, --year_time", year_time, "Total time (in year) for simulation")->check(CLI::PositiveNumber);
+    int n_steps(-1);
     app.add_option("--ns, --n_steps", n_steps, "Number of steps for simulation")->check(CLI::PositiveNumber);
 
     CLI11_PARSE(app, argc, argv);
@@ -29,19 +29,19 @@ int main(int argc, char **argv)
 
     if (dt > 0)
     {
-        if (total_time > 0 & n_steps <= 0)
+        if (year_time > 0 & n_steps <= 0)
         {
-            n_steps = total_time / dt;
+            n_steps = year_time * 2 * M_PI / dt;
         }
-        else if (total_time <= 0 & n_steps > 0)
+        else if (year_time <= 0 & n_steps > 0)
         {
-            total_time = n_steps * dt;
+            year_time = n_steps * dt;
         }
         else
         {
             // std::count << std::string(dt);
             printf("%f\n", dt);
-            printf("%f\n", total_time);
+            printf("%f\n", year_time);
             printf("%d\n", n_steps);
             // std::count << total_time;
             // std::count << n_steps;
@@ -55,13 +55,30 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    // std::vector<std::shared_ptr<Particle>> SS_initial = initialize_Solar_System();
+    std::vector<std::shared_ptr<Particle>> SS_initial = initialize_Solar_System();
+    double total_energy_initial = calTotalEnergy(SS_initial);
 
-    // std::vector<std::shared_ptr<Particle>> SS_updated = update_Solar_System(SS_initial, dt, total_time, n_steps);
+    // ! SS_initial will be changed in the update_Solar_System function
+    std::vector<std::shared_ptr<Particle>> SS_updated = update_Solar_System(SS_initial, dt, year_time, n_steps);
+    double total_energy_updated = calTotalEnergy(SS_updated);
 
-    std::cout << "Hello World!\n"
+    std::cout << "total energy of the solar system at the beginning is "
+              << total_energy_initial
+              << std::endl;
+    std::cout << "total energy of the solar system after "
+              << year_time
+              << " years with dt = "
+              << dt
+              << " is "
+              << total_energy_updated
+              << std::endl;
+    std::cout << "total energy increased during this period is "
+              << total_energy_updated - total_energy_initial
               << std::endl;
 
-    run_Solar_System_in_one_year();
+    // std::cout << "Hello World!\n"
+    //           << std::endl;
+
+    // run_Solar_System_in_one_year();
     return 0;
 }
