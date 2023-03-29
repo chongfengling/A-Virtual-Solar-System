@@ -4,9 +4,10 @@
 #include <cmath>
 #include <iostream>
 #include <random>
+#include <chrono>
 
 // return the acceleration of p1 due to p2
-Eigen::Vector3d calcAcceleration(Particle &p1, Particle &p2, double epsilon) // no default value for epsilon. 
+Eigen::Vector3d calcAcceleration(Particle &p1, Particle &p2, double epsilon) // no default value for epsilon.
 // ! Why not shared_ptr? why shared_ptr in other functions?
 {
     Eigen::Vector3d r_vec = p2.getPosition() - p1.getPosition();
@@ -50,6 +51,7 @@ std::vector<std::shared_ptr<Particle>> initialize_Solar_System()
 
 std::vector<std::shared_ptr<Particle>> update_Solar_System(std::vector<std::shared_ptr<Particle>> Solar_System, double dt, double total_time, int n_steps)
 {
+    auto start_time = std::chrono::high_resolution_clock::now();
     for (int n = 0; n < n_steps; n++)
     {
         // update the gravitational acceleration of each body
@@ -64,6 +66,24 @@ std::vector<std::shared_ptr<Particle>> update_Solar_System(std::vector<std::shar
             Solar_System[j]->update(dt);
         }
     }
+    auto end_time = std::chrono::high_resolution_clock::now();
+    double elapsed_time = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count(); // unit: ms
+    double time_per_step = elapsed_time / n_steps;
+    std::cout << "dt = "
+              << dt
+              << " ms. year = "
+              << total_time
+              << ", step = "
+              << n_steps
+              << std::endl
+              << "total time =  "
+              << elapsed_time
+              << " ms. "
+              << "time per step is "
+              << time_per_step
+              << " ms"
+              << std::endl;
+
     return Solar_System;
 }
 
@@ -71,7 +91,7 @@ void run_Solar_System_in_one_year()
 {
     // Simulation of the real solar system for one year
     // initialize the solar system
-    std::vector<std::shared_ptr<Particle>> SS_initial = initialize_Solar_System();   
+    std::vector<std::shared_ptr<Particle>> SS_initial = initialize_Solar_System();
     // print the initial position of planets in the solar system
     for (int i = 0; i < SS_initial.size(); i++)
     {
@@ -117,7 +137,7 @@ void run_Solar_System_in_one_year()
               << std::endl;
 }
 
-double calTotalEnergy(const std::vector<std::shared_ptr<Particle>>& Solar_System)
+double calTotalEnergy(const std::vector<std::shared_ptr<Particle>> &Solar_System)
 {
     double total_energy(0);
     for (int i = 0; i < Solar_System.size(); i++)
