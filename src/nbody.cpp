@@ -82,6 +82,11 @@ void run_Solar_System_in_one_year()
                   << SS_initial[i]->getPosition()
                   << std::endl;
     }
+    // calculate the total energy of the solar system at the beginning
+    double total_energy_initial = calTotalEnergy(SS_initial);
+    std::cout << "total energy of the solar system at the beginning is "
+              << total_energy_initial
+              << std::endl;
 
     // define the time step and total time
     double dt(0.0001);
@@ -100,4 +105,24 @@ void run_Solar_System_in_one_year()
                   << SS_updated[i]->getPosition()
                   << std::endl;
     }
+    // calculate the total energy of the solar system
+    double total_energy_updated = calTotalEnergy(SS_updated);
+    std::cout << "total energy of the solar system after one year and dt = "
+              << dt
+              << " is "
+              << total_energy_updated
+              << std::endl;
+    std::cout << "the difference between the initial and final total energy is "
+              << total_energy_updated - total_energy_initial
+              << std::endl;
+}
+
+double calTotalEnergy(const std::vector<std::shared_ptr<Particle>>& Solar_System)
+{
+    double total_energy(0);
+    for (int i = 0; i < Solar_System.size(); i++)
+    {
+        total_energy += (Solar_System[i]->calKineticEnergy() + Solar_System[i]->calPotentialEnergy(Solar_System));
+    }
+    return total_energy;
 }

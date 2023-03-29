@@ -60,10 +60,30 @@ void Particle::updateAcceleration(const std::vector<std::shared_ptr<Particle>> &
     {
         // check if p is the same particle as *this
         // when ==, why output is nan * 3?
-        if (p->getPosition() != this->getPosition())
+        if (p.get() != this)
         {
             acceleration_sum += calcAcceleration(*this, *p, epsilon); // why *this?
         }
     }
     this->acceleration = acceleration_sum;
+}
+
+double Particle::calKineticEnergy()
+{
+    double kinetic_energy = 0.5 * this->mass * this->velocity.squaredNorm();
+    return kinetic_energy;
+}
+
+double Particle::calPotentialEnergy(const std::vector<std::shared_ptr<Particle>> &p_list)
+{
+    double potential_energy = 0;
+    for (const auto& p : p_list)
+    {
+        if (p.get() != this)
+        {
+            double distance = (p->getPosition() - this->getPosition()).norm();
+            potential_energy += -0.5 * this->mass * p->getMass() / distance;
+        }
+    }
+    return potential_energy;
 }

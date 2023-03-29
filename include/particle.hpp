@@ -15,6 +15,9 @@ public:
     void setVelocity(Eigen::Vector3d velocity);
     void setPosition(Eigen::Vector3d position);
     void updateAcceleration(const std::vector<std::shared_ptr<Particle>>& p_list, double epsilon);
+    double calKineticEnergy();
+    double calPotentialEnergy(const std::vector<std::shared_ptr<Particle>>& p_list);
+
 
 private:
     const double mass;
