@@ -128,29 +128,30 @@ TEST_CASE("Gravitational force due to two opposite particles", "[Gravity]")
 TEST_CASE("a simple Solar System (the Sun and the Earth only)", "[the Solar System]")
 {
     std::cout << "a simple Solar System" << std::endl;
-    std::vector<std::shared_ptr<Particle>> initial_solar_system;
+    std::vector<std::shared_ptr<Particle>> SS_initial;
     // add the Sun
-    std::shared_ptr<Particle> sun = std::make_shared<Particle>(1, Eigen::Vector3d(1, 0, 0), Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(0, 0, 0));
-    initial_solar_system.push_back(sun);
+    std::shared_ptr<Particle> sun = std::make_shared<Particle>(1, Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(0, 0, 0));
+    SS_initial.push_back(sun);
     // add the Earth
     double r = 1;
-    double theta = 0;
+    double theta = 2023;
     std::shared_ptr<Particle> earth = std::make_shared<Particle>(
         1. / 332946.038,
         Eigen::Vector3d(r * sin(theta), r * cos(theta), 0),
         Eigen::Vector3d(-cos(theta) / sqrt(r), sin(theta) / sqrt(r), 0), Eigen::Vector3d(0, 0, 0));
-    initial_solar_system.push_back(earth);
+    SS_initial.push_back(earth);
     // one year after
     double dt(0.0001);
     double total_time(2 * M_PI);
     int n_steps(total_time / dt);
     // update the solar system
-    std::vector<std::shared_ptr<Particle>> updated_solar_system = update_Solar_System(initial_solar_system, dt, total_time, n_steps);
+    std::vector<std::shared_ptr<Particle>> SS_updated = update_Solar_System(SS_initial, dt, total_time, n_steps);
     // After a time of 2Pi, the Earth should be back to its initial position
     Eigen::Vector3d expected_position_final{r * sin(theta), r * cos(theta), 0};
-    bool earth_back_to_initial_pos = updated_solar_system[1]->getPosition().isApprox(expected_position_final, 0.01);
+    bool earth_back_to_initial_pos = SS_updated[1]->getPosition().isApprox(expected_position_final, 0.01);
     //
-    std::cout << "Earth position: " << updated_solar_system[1]->getPosition() << std::endl;
+    std::cout << "Earth position sun: " << SS_updated[0]->getPosition() << std::endl;
+    std::cout << "Earth position earth: " << SS_updated[1]->getPosition() << std::endl;
     std::cout << "Expected position: " << expected_position_final << std::endl;
     REQUIRE(earth_back_to_initial_pos);
 }
