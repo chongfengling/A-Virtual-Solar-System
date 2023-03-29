@@ -41,7 +41,7 @@ std::vector<std::shared_ptr<Particle>> initialize_Solar_System()
             std::make_shared<Particle>(
                 masses[i],
                 Eigen::Vector3d(distances[i] * sin(angles[i]), distances[i] * cos(angles[i]), 0),
-                Eigen::Vector3d(-cos(angles[i]) / sqrt(distances[0]), sin(angles[i]) / sqrt(distances[i]), 0),
+                Eigen::Vector3d(-cos(angles[i]) / sqrt(distances[i]), sin(angles[i]) / sqrt(distances[i]), 0),
                 Eigen::Vector3d(0, 0, 0)));
     }
 
