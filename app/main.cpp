@@ -16,7 +16,7 @@ int main(int argc, char **argv)
     // use either total time or number of steps
     double total_time;
     app.add_option("--tt, --total_time", total_time, "Total time for simulation")->check(CLI::PositiveNumber);
-    int n_steps;
+    int n_steps = -1;
     app.add_option("--ns, --n_steps", n_steps, "Number of steps for simulation")->check(CLI::PositiveNumber);
 
     CLI11_PARSE(app, argc, argv);
