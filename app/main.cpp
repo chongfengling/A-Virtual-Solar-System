@@ -17,9 +17,11 @@ int main(int argc, char **argv)
     app.add_option("--dt, --delta_time", dt, "Time step for simulation")->check(CLI::PositiveNumber);
     // use either total time or number of steps
     double year_time(-1);
-    app.add_option("--yt, --year_time", year_time, "Total time (in year) for simulation")->check(CLI::PositiveNumber);
+    app.add_option("--yt, --year_time", year_time, "Total time for simulation in year")->check(CLI::PositiveNumber);
     int n_steps(-1);
-    app.add_option("--ns, --n_steps", n_steps, "Number of steps for simulation")->check(CLI::PositiveNumber);
+    app.add_option("--ns, --n_steps", n_steps, "The number of simulation steps")->check(CLI::PositiveNumber);
+    double epsilon(0);
+    app.add_option("--ep, --epsilon", epsilon, "parameter epsilon for simulation")->check(CLI::PositiveNumber);
 
     CLI11_PARSE(app, argc, argv);
 
@@ -63,7 +65,7 @@ int main(int argc, char **argv)
     double total_energy_initial = calTotalEnergy(SS_initial);
 
     // ! SS_initial will be changed in the update_Solar_System function
-    std::vector<std::shared_ptr<Particle>> SS_updated = update_Solar_System(SS_initial, dt, year_time, n_steps);
+    std::vector<std::shared_ptr<Particle>> SS_updated = update_Solar_System(SS_initial, dt, year_time, n_steps, epsilon);
     double total_energy_updated = calTotalEnergy(SS_updated);
 
     std::cout << "total energy of the solar system at the beginning is "

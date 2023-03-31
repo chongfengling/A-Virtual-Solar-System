@@ -17,7 +17,7 @@ Eigen::Vector3d calcAcceleration(Particle &p1, Particle &p2, double epsilon) // 
     return acceleration;
 }
 
-std::vector<std::shared_ptr<Particle>> update_Solar_System(std::vector<std::shared_ptr<Particle>> Solar_System, double dt, double total_time, int n_steps)
+std::vector<std::shared_ptr<Particle>> update_Solar_System(std::vector<std::shared_ptr<Particle>> Solar_System, double dt, double total_time, int n_steps, double epsilon)
 {
     auto start_time = std::chrono::high_resolution_clock::now();
     for (int n = 0; n < n_steps; n++)
@@ -26,7 +26,7 @@ std::vector<std::shared_ptr<Particle>> update_Solar_System(std::vector<std::shar
         for (int i = 0; i < Solar_System.size(); i++)
         {
             // ? What is epsilon, 0 or 1? 0 works for test case 'a simple Solar System (the Sun and the Earth only)'
-            Solar_System[i]->updateAcceleration(Solar_System, 0);
+            Solar_System[i]->updateAcceleration(Solar_System, epsilon);
         }
         // update the position and velocity of each body
         for (int j = 0; j < Solar_System.size(); j++)
