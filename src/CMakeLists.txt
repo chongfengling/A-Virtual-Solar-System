@@ -1,4 +1,4 @@
-add_library(nbody_lib particle.cpp nbody.cpp)
+add_library(nbody_lib particle.cpp nbody.cpp generator.cpp randomSystemGenerator.cpp solarSystemGenerator.cpp)
 target_compile_features(nbody_lib PUBLIC cxx_std_17)
 target_include_directories(nbody_lib PUBLIC ../include)
 

@@ -1,8 +1,10 @@
 #include <iostream>
-#include "/usr/include/eigen3/Eigen/Core"
+#include <Eigen/Core>
 #include "CLI11.hpp"
 #include "particle.hpp"
 #include "nbody.hpp"
+#include "solarSystemGenerator.hpp"
+#include "randomSystemGenerator.hpp"
 
 int main(int argc, char **argv)
 {
@@ -55,7 +57,9 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    std::vector<std::shared_ptr<Particle>> SS_initial = initialize_Solar_System();
+    std::shared_ptr<SolarSystemGenerator> generator = std::make_shared<SolarSystemGenerator>();
+    std::vector<std::shared_ptr<Particle>> SS_initial = generator->generateInitialConditions();
+
     double total_energy_initial = calTotalEnergy(SS_initial);
 
     // ! SS_initial will be changed in the update_Solar_System function
@@ -75,9 +79,6 @@ int main(int argc, char **argv)
     std::cout << "total energy increased during this period is "
               << total_energy_updated - total_energy_initial
               << std::endl;
-
-    // std::cout << "Hello World!\n"
-    //           << std::endl;
 
     // run_Solar_System_in_one_year();
     return 0;
