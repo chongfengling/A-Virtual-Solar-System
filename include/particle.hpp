@@ -1,3 +1,6 @@
+#ifndef PARTICLE_HPP
+#define PARTICLE_HPP
+
 #include <Eigen/Core>
 #include <memory>
 
@@ -6,18 +9,17 @@ class Particle
 public:
     Particle(double in_mass);
     Particle(double in_mass, Eigen::Vector3d position, Eigen::Vector3d velocity, Eigen::Vector3d acceleration);
-    Eigen::Vector3d& getPosition();
-    Eigen::Vector3d& getVelocity();
-    Eigen::Vector3d& getAcceleration();
-    const double& getMass();
+    Eigen::Vector3d &getPosition();
+    Eigen::Vector3d &getVelocity();
+    Eigen::Vector3d &getAcceleration();
+    const double &getMass();
     void update(double dt);
     void setAcceleration(Eigen::Vector3d acceleration);
     void setVelocity(Eigen::Vector3d velocity);
     void setPosition(Eigen::Vector3d position);
-    void updateAcceleration(const std::vector<std::shared_ptr<Particle>>& p_list, double epsilon);
+    void updateAcceleration(const std::vector<std::shared_ptr<Particle>> &p_list, double epsilon);
     double calKineticEnergy();
-    double calPotentialEnergy(const std::vector<std::shared_ptr<Particle>>& p_list);
-
+    double calPotentialEnergy(const std::vector<std::shared_ptr<Particle>> &p_list);
 
 private:
     const double mass;
@@ -25,3 +27,4 @@ private:
     Eigen::Vector3d velocity;
     Eigen::Vector3d acceleration;
 };
+#endif // PARTICLE_HPP
