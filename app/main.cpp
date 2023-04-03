@@ -24,6 +24,10 @@ int main(int argc, char **argv)
     app.add_option("--ep, --epsilon", epsilon, "parameter epsilon for simulation")->check(CLI::PositiveNumber);
     std::string task("None");
     app.add_option("--task", task, "task to run");
+    int n_particles;
+    app.add_option("--np, --n_particles", n_particles, "The number of particles in the system")->check(CLI::PositiveNumber);
+    int seed(2023);
+    app.add_option("--sd, --seed", seed, "random seed for random initialized system")->check(CLI::PositiveNumber);
 
     CLI11_PARSE(app, argc, argv);
 
@@ -66,30 +70,46 @@ int main(int argc, char **argv)
         run_Solar_System(dt, year_time, n_steps, epsilon);
         return 0;
     }
+    else if (task == "RS") // The random initialized system
+    {
+        if (n_particles > 0)
+        {
+            std::cout << "Task: Random System" << std::endl;
+            std::shared_ptr<RandomSystemGenerator> generator = std::make_shared<RandomSystemGenerator>(n_particles, seed, epsilon);
+            std::vector<std::shared_ptr<Particle>> SS_initial = generator->generateInitialConditions();
+            double total_energy_initial = calTotalEnergy(SS_initial);
 
-    std::shared_ptr<SolarSystemGenerator> generator = std::make_shared<SolarSystemGenerator>();
-    std::vector<std::shared_ptr<Particle>> SS_initial = generator->generateInitialConditions();
+            // ! SS_initial will be changed in the update_Solar_System function
+            std::vector<std::shared_ptr<Particle>> SS_updated = update_Solar_System(SS_initial, dt, year_time, n_steps, epsilon);
+            double total_energy_updated = calTotalEnergy(SS_updated);
 
-    double total_energy_initial = calTotalEnergy(SS_initial);
+            std::cout << "total energy of the solar system at the beginning is "
+                      << total_energy_initial
+                      << std::endl;
+            std::cout << "total energy of the solar system after "
+                      << year_time
+                      << " years with dt = "
+                      << dt
+                      << " is "
+                      << total_energy_updated
+                      << std::endl;
+            std::cout << "total energy increased during this period is "
+                      << total_energy_updated - total_energy_initial
+                      << std::endl;
+            return 0;
+        }
+        else
+        {
+            std::cerr << "Error: n_particles is required, please refer to the help information '-h'." << std::endl;
+            return 1;
+        }
+        return 0;
+    }
+    else
+    {
+        std::cerr << "Error: task is required, please refer to the help information '-h'." << std::endl;
+        return 1;
+    }
 
-    // ! SS_initial will be changed in the update_Solar_System function
-    std::vector<std::shared_ptr<Particle>> SS_updated = update_Solar_System(SS_initial, dt, year_time, n_steps, epsilon);
-    double total_energy_updated = calTotalEnergy(SS_updated);
-
-    std::cout << "total energy of the solar system at the beginning is "
-              << total_energy_initial
-              << std::endl;
-    std::cout << "total energy of the solar system after "
-              << year_time
-              << " years with dt = "
-              << dt
-              << " is "
-              << total_energy_updated
-              << std::endl;
-    std::cout << "total energy increased during this period is "
-              << total_energy_updated - total_energy_initial
-              << std::endl;
-
-    // run_Solar_System_in_one_year();
     return 0;
 }
