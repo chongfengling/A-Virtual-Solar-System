@@ -39,12 +39,12 @@ std::vector<std::shared_ptr<Particle>> update_Solar_System(std::vector<std::shar
     double time_per_step = elapsed_time / n_steps;
     std::cout << "dt = "
               << dt
-              << " ms. year = "
+              << " (year/2Pi). Total time = "
               << total_time
-              << ", step = "
+              << " year, step = " //in run_one_year will * 2pi
               << n_steps
               << std::endl
-              << "total time =  "
+              << "Running time =  "
               << elapsed_time
               << " ms. "
               << "time per step is "
@@ -72,10 +72,10 @@ void run_Solar_System_in_one_year()
                   << std::endl;
     }
     // calculate the total energy of the solar system at the beginning
-    double total_energy_initial = calTotalEnergy(SS_initial);
-    std::cout << "total energy of the solar system at the beginning is "
-              << total_energy_initial
-              << std::endl;
+    // double total_energy_initial = calTotalEnergy(SS_initial);
+    // std::cout << "total energy of the solar system at the beginning is "
+    //           << total_energy_initial
+    //           << std::endl;
 
     // define the time step and total time
     double dt(0.0001);
@@ -95,15 +95,15 @@ void run_Solar_System_in_one_year()
                   << std::endl;
     }
     // calculate the total energy of the solar system
-    double total_energy_updated = calTotalEnergy(SS_updated);
-    std::cout << "total energy of the solar system after one year and dt = "
-              << dt
-              << " is "
-              << total_energy_updated
-              << std::endl;
-    std::cout << "the difference between the initial and final total energy is "
-              << total_energy_updated - total_energy_initial
-              << std::endl;
+    // double total_energy_updated = calTotalEnergy(SS_updated);
+    // std::cout << "total energy of the solar system after one year and dt = "
+    //           << dt
+    //           << " is "
+    //           << total_energy_updated
+    //           << std::endl;
+    // std::cout << "the difference between the initial and final total energy is "
+    //           << total_energy_updated - total_energy_initial
+    //           << std::endl;
 }
 
 double calTotalEnergy(const std::vector<std::shared_ptr<Particle>> &Solar_System)

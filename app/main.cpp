@@ -22,6 +22,8 @@ int main(int argc, char **argv)
     app.add_option("--ns, --n_steps", n_steps, "The number of simulation steps")->check(CLI::PositiveNumber);
     double epsilon(0);
     app.add_option("--ep, --epsilon", epsilon, "parameter epsilon for simulation")->check(CLI::PositiveNumber);
+    std::string task("None");
+    app.add_option("--task", task, "task to run");
 
     CLI11_PARSE(app, argc, argv);
 
@@ -57,6 +59,12 @@ int main(int argc, char **argv)
     {
         std::cerr << "Error: ht is required, please refer to the help information '-h'." << std::endl;
         return 1;
+    }
+    if (task == "SS")
+    {
+        std::cout << "task: Solar System" << std::endl;
+        run_Solar_System_in_one_year();
+        return 0;
     }
 
     std::shared_ptr<SolarSystemGenerator> generator = std::make_shared<SolarSystemGenerator>();
