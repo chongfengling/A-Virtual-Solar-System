@@ -52,37 +52,73 @@ You should fill in the instructions for using the app here.
 
 This project is maintained by Dr. Jamie Quinn as part of UCL ARC's course, Research Computing in C++.
 
-## Report
-### Energy changed after 100 years of simulation with different time steps dt
-1. dt = 1
-    ```
-    build/solarSystemSimulator --dt 1 --yt 100
-    // total energy of the solar system at the beginning is -0.000112416
-    // total energy of the solar system after 100 years with dt = 1 is -2.7138e-05
-    // total energy increased during this period is 8.52779e-05
-    ```
-2. dt = 0.1
-    ```
-    build/solarSystemSimulator --dt 0.1 --yt 100
-    // total energy of the solar system at the beginning is -0.000112423
-    // total energy of the solar system after 100 years with dt = 0.1 is -7.49152e-05
-    // total energy increased during this period is 3.7508e-05
-    ```
-3. dt = 0.01
-    ```
-    build/solarSystemSimulator --dt 0.001 --yt 100
-    // total energy of the solar system at the beginning is -0.000112435
-    // total energy of the solar system after 100 years with dt = 0.001 is -0.00010983
-    // total energy increased during this period is 2.60468e-06
-    ```
-4. dt = 0.001
-    ```
-    build/solarSystemSimulator --dt 0.0001 --yt 100
-    // total energy of the solar system at the beginning is -0.000112414
-    // total energy of the solar system after 100 years with dt = 0.0001 is -0.000111693
-    // total energy increased during this period is 7.21498e-07
-    ```
-5. dt = 5
-6. dt = 0.5
-7. dt = 0.05
-8. dt = 0.005
+## Results
+### 1.3 A Simulation of the Solar System in one year
+**Task: Solar System**
+- Time step (dt): 1e-05 years/2Pi
+- Total time: 1 year
+- Step count: 628318
+- Running time: 631 ms
+- Time per step: 0.00100427 ms
+
+**Initial position of particles:**
+- Particle 0 (Sun): 0, 0, 0
+- Particle 1 (Mercury): 0.347697, -0.197754, 0
+- Particle 2 (Venus): 0.534739, -0.451724, 0
+- Particle 3 (Earth): 0.994237, 0.1072, 0
+- Particle 4 (Mars): -1.27357, 0.792483, 0
+- Particle 5 (Jupiter): -1.60114, 4.94736, 0
+- Particle 6 (Saturn): -0.154988, 9.49874, 0
+- Particle 7 (Uranus): 16.0581, 10.5252, 0
+- Particle 8 (Neptune): 23.2942, -19.0628, 0
+
+**Final position of particles after 1 year with dt=1e-05:**
+- Particle 0 (Sun): -0.000316124, 0.000706206, 0
+- Particle 1 (Mercury): 0.264261, -0.300355, 0
+- Particle 2 (Venus): -0.578638, -0.39422, 0
+- Particle 3 (Earth): 0.99411, 0.107346, 0
+- Particle 4 (Mars): 1.44218, -0.410962, 0
+- Particle 5 (Jupiter): -3.88201, 3.45985, 0
+- Particle 6 (Saturn): -2.1743, 9.24719, 0
+- Particle 7 (Uranus): 15.2279, 11.694, 0
+- Particle 8 (Neptune): 24.0024, -18.1629, 0
+
+**Screenshot**
+![screenshot](./assets/1_3_screenshot.png)
+
+### 2.2 Benchmarking the simulation
+Energy changed and time costed after 100 years of simulation with different time step dt
+#### 2.2.1 With compiler optimization (8 different dt, total time: 100 years, number of step: 200 $\pi$ / dt)
+| dt | Running time (ms) | Time per step (ms) | Energy change | Number of step |
+| --- | --- | --- | --- | --- |
+| 0.01 | 68 | 0.00108227 | 9.92208e-06 | 62831 |
+| 0.001 | 612 | 0.000974029 | 2.61235e-06 | 628318 |
+|0.0005 | 1251 | 0.000995514 |1.83367e-06 |1256637 |
+|0.0001 | 6104 | 0.000971482 | 7.21491e-07 | 6283185 |
+|0.00005 | 12485 | 0.000993525 | 4.41891e-07 | 12566370 | 
+|0.00001 | 61652 | 0.000981222 | 1.16686e-07| 62831853 |
+|0.000005 | 123166 | 0.000980124 | 6.177e-08 | 125663706 |
+|0.000001 | 621710 | 0.000989482 | 1.30497e-08 | 628318530 |
+
+**Screenshot (dt=0.0001)**
+
+![screenshot2](./assets/2_2_1_1e-4.png)
+
+#### 2.2.2 Without compiler optimization
+| dt | Running time (ms) | Time per step (ms) | Energy change | Number of step |
+| --- | --- | --- | --- | --- |
+| 0.0001 | 311168 | 0.0495239 | 7.21582e-07 | 6283185 |
+
+**Screenshot (dt=0.0001)**
+![screenshot2](./assets/2_2_2_1e-4.png)
+
+#### 2.2.3 Summary
+
+Given a fixed total time, The running time and energy change are linearly proportional to the time step dt while the running time per step remains constant (around 0.00099 ms). Compiler optimization results in a significant fiftyfold improvement in runtime (reduce from 0.048 ms to 0.001 ms, with dt=0.0001) and don't affect the energy change.
+
+To balance the time efficiency and computational accuracy, I choose dt=0.00005 as the time step for further simulation.
+
+### 2.3 Increasing the scale of the system
+With dt=0.00005 and total time=100 years, the simulation results of the random initial conditions with different number of particles are shown below. The number of particles 8, 64, 256, 1024, 2048
+
+

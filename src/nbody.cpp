@@ -55,7 +55,7 @@ std::vector<std::shared_ptr<Particle>> update_Solar_System(std::vector<std::shar
     return Solar_System;
 }
 
-void run_Solar_System_in_one_year()
+void run_Solar_System(double dt, double total_time, int n_steps, double epsilon)
 {
     // Simulation of the real solar system for one year
     // initialize the solar system
@@ -78,11 +78,11 @@ void run_Solar_System_in_one_year()
     //           << std::endl;
 
     // define the time step and total time
-    double dt(0.0001);
-    double total_time(2 * M_PI);
-    int n_steps(total_time / dt);
+    // double dt(0.0001);
+    // double total_time(2 * M_PI);
+    // int n_steps(total_time / dt);
     // update the solar system
-    std::vector<std::shared_ptr<Particle>> SS_updated = update_Solar_System(SS_initial, dt, total_time, n_steps);
+    std::vector<std::shared_ptr<Particle>> SS_updated = update_Solar_System(SS_initial, dt, total_time, n_steps, epsilon);
     // print the final position of planets in the solar system
     for (int i = 0; i < SS_updated.size(); i++)
     {

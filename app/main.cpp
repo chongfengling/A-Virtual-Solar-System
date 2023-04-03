@@ -60,10 +60,10 @@ int main(int argc, char **argv)
         std::cerr << "Error: ht is required, please refer to the help information '-h'." << std::endl;
         return 1;
     }
-    if (task == "SS")
+    if (task == "SS") // The Solar system
     {
         std::cout << "task: Solar System" << std::endl;
-        run_Solar_System_in_one_year();
+        run_Solar_System(dt, year_time, n_steps, epsilon);
         return 0;
     }
 
