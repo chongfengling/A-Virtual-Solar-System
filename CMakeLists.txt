@@ -6,6 +6,7 @@ project(nBody VERSION 1.0 LANGUAGES CXX)
 set(Eigen3_DIR ${CMAKE_BINARY_DIR})
 set(Catch2_DIR ${CMAKE_BINARY_DIR})
 
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG")
 # Make executables appear in build, not build/src
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
