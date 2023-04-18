@@ -56,6 +56,7 @@ void Particle::setPosition(Eigen::Vector3d position)
 void Particle::updateAcceleration(const std::vector<std::shared_ptr<Particle>> &p_list, double epsilon)
 {
     Eigen::Vector3d acceleration_sum{0, 0, 0};
+    #pragma opm parallel for reduction(+:acceleration_sum) schedule(runtime)
     for (const auto& p : p_list) //why const auto& p? especially const? ans: change the variable in this only 
     {
         // check if p is the same particle as *this
@@ -77,6 +78,7 @@ double Particle::calKineticEnergy()
 double Particle::calPotentialEnergy(const std::vector<std::shared_ptr<Particle>> &p_list)
 {
     double potential_energy = 0;
+    #pragma opm parallel for reduction(+:potential_energy) schedule(runtime)
     for (const auto& p : p_list)
     {
         if (p.get() != this)

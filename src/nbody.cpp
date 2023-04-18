@@ -20,19 +20,24 @@ Eigen::Vector3d calcAcceleration(Particle &p1, Particle &p2, double epsilon) // 
 std::vector<std::shared_ptr<Particle>> update_Solar_System(std::vector<std::shared_ptr<Particle>> Solar_System, double dt, double total_time, int n_steps, double epsilon)
 {
     auto start_time = std::chrono::high_resolution_clock::now();
+    #pragma omp parallel
     for (int n = 0; n < n_steps; n++)
     {
         // update the gravitational acceleration of each body
+        #pragma omp for schedule(runtime)
         for (int i = 0; i < Solar_System.size(); i++)
         {
             // ? What is epsilon, 0 or 1? 0 works for test case 'a simple Solar System (the Sun and the Earth only)'
             Solar_System[i]->updateAcceleration(Solar_System, epsilon);
         }
+        #pragma omp barrier
         // update the position and velocity of each body
+        #pragma omp for schedule(runtime)
         for (int j = 0; j < Solar_System.size(); j++)
         {
             Solar_System[j]->update(dt);
         }
+        #pragma omp barrier
     }
     auto end_time = std::chrono::high_resolution_clock::now();
     double elapsed_time = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count(); // unit: ms
@@ -107,6 +112,7 @@ void run_Solar_System(double dt, double total_time, int n_steps, double epsilon)
 double calTotalEnergy(const std::vector<std::shared_ptr<Particle>> &Solar_System)
 {
     double total_energy(0);
+    #pragma omp parallel for reduction(+:total_energy) schedule(runtime)
     for (int i = 0; i < Solar_System.size(); i++)
     {
         total_energy += (Solar_System[i]->calKineticEnergy() + Solar_System[i]->calPotentialEnergy(Solar_System));
