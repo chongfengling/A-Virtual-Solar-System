@@ -155,3 +155,55 @@ TEST_CASE("a simple Solar System (the Sun and the Earth only)", "[the Solar Syst
     std::cout << "Expected position: " << expected_position_final << std::endl;
     REQUIRE(earth_back_to_initial_pos);
 }
+
+TEST_CASE("Unit Test: calKineticEnergy", "[calKineticEnergy]")
+{
+    std::shared_ptr<Particle> p1 = std::make_shared<Particle>(2, Eigen::Vector3d(1, 2, 3), Eigen::Vector3d(4, 5, 6), Eigen::Vector3d(7, 8, 9));
+    double expected_kinetic_energy = 0.5 * 2 * (4 * 4 + 5 * 5 + 6 * 6);
+
+    REQUIRE_THAT(p1->calKineticEnergy(), WithinRel(expected_kinetic_energy, 1e-6));
+}
+
+TEST_CASE("Unit Test: calPotentialEnergy", "[calPotentialEnergy]")
+{
+    // origin particle
+    std::shared_ptr<Particle> p0 = std::make_shared<Particle>(3, Eigen::Vector3d(1, 2, 3), Eigen::Vector3d(4, 5, 6), Eigen::Vector3d(7, 8, 9));
+    // two added particles
+    std::shared_ptr<Particle> p1 = std::make_shared<Particle>(4, Eigen::Vector3d(11, 12, 13), Eigen::Vector3d(14, 15, 16), Eigen::Vector3d(17, 18, 19));
+    std::shared_ptr<Particle> p2 = std::make_shared<Particle>(5, Eigen::Vector3d(23, 22, 21), Eigen::Vector3d(24, 25, 26), Eigen::Vector3d(27, 28, 29));
+    // list of particles
+    std::vector<std::shared_ptr<Particle>> p_list_with_p0{p0, p1, p2};
+    std::vector<std::shared_ptr<Particle>> p_list_without_p0{p1, p2};
+    // Define the expected value for the potential energy
+    double d1 = sqrt((11 - 1) * (11 - 1) + (12 - 2) * (12 - 2) + (13 - 3) * (13 - 3));
+    double d2 = sqrt((23 - 1) * (23 - 1) + (22 - 2) * (22 - 2) + (21 - 3) * (21 - 3));
+    double expected_potential_energy = (-0.5 * 3 * 4 / d1) + (-0.5 * 3 * 5 / d2);
+    // Check if the potential energy is correct
+    REQUIRE_THAT(p0->calPotentialEnergy(p_list_with_p0), WithinRel(expected_potential_energy, 1e-6));
+    REQUIRE_THAT(p0->calPotentialEnergy(p_list_without_p0), WithinRel(expected_potential_energy, 1e-6));
+}
+
+TEST_CASE("Unit Test: calTotalEnergy", "[calTotalEnergy]")
+{
+    // three particles
+    std::shared_ptr<Particle> p0 = std::make_shared<Particle>(10, Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(0, 0, 0));
+    std::shared_ptr<Particle> p1 = std::make_shared<Particle>(1, Eigen::Vector3d(1, 2, 3), Eigen::Vector3d(4, 5, 6), Eigen::Vector3d(7, 8, 9));
+    std::shared_ptr<Particle> p2 = std::make_shared<Particle>(2, Eigen::Vector3d(13, 12, 11), Eigen::Vector3d(14, 15, 16), Eigen::Vector3d(17, 18, 19));
+
+    // Expected value for the kinetic energy
+    double ke_0 = 0.5 * 10 * (0 * 0 + 0 * 0 + 0 * 0);
+    double ke_1 = 0.5 * 1 * (4 * 4 + 5 * 5 + 6 * 6);
+    double ke_2 = 0.5 * 2 * (14 * 14 + 15 * 15 + 16 * 16);
+    // Expected value for the potential energy
+    double d_01 = sqrt((1 - 0) * (1 - 0) + (2 - 0) * (2 - 0) + (3 - 0) * (3 - 0));
+    double d_02 = sqrt((11 - 0) * (11 - 0) + (12 - 0) * (12 - 0) + (13 - 0) * (13 - 0));
+    double d_12 = sqrt((13 - 1) * (13 - 1) + (12 - 2) * (12 - 2) + (11 - 3) * (11 - 3));
+    double pe_0 = (-0.5 * 10 * 1 / d_01) + (-0.5 * 10 * 2 / d_02);
+    double pe_1 = (-0.5 * 1 * 10 / d_01) + (-0.5 * 1 * 2 / d_12);
+    double pe_2 = (-0.5 * 2 * 10 / d_02) + (-0.5 * 2 * 1 / d_12);
+    // Expected value for the total energy
+    double expected_total_energy = ke_0 + ke_1 + ke_2 + pe_0 + pe_1 + pe_2;
+    // Check if the total energy is correct
+    std::vector<std::shared_ptr<Particle>> p_list{p0, p1, p2};
+    REQUIRE_THAT(calTotalEnergy(p_list), WithinRel(expected_total_energy, 1e-6));
+}
