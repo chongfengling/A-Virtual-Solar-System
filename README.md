@@ -110,15 +110,55 @@ Energy changed and time costed after 100 years of simulation with different time
 | 0.0001 | 311168 | 0.0495239 | 7.21582e-07 | 6283185 |
 
 **Screenshot (dt=0.0001)**
+
 ![screenshot2](./assets/2_2_2_1e-4.png)
 
 #### 2.2.3 Summary
 
 Given a fixed total time, The running time and energy change are linearly proportional to the time step dt while the running time per step remains constant (around 0.00099 ms). Compiler optimization results in a significant fiftyfold improvement in runtime (reduce from 0.048 ms to 0.001 ms, with dt=0.0001) and don't affect the energy change.
 
-To balance the time efficiency and computational accuracy, I choose dt=0.00005 as the time step for further simulation.
+To balance the time efficiency and computational accuracy, I choose dt=0.001 as the time step for further simulation.
 
 ### 2.3 Increasing the scale of the system
-With dt=0.00005 and total time=100 years, the simulation results of the random initial conditions with different number of particles are shown below. The number of particles 8, 64, 256, 1024, 2048
+With dt=0.001 * $\frac{1}{2\pi}$ year and total time is one year, the simulation results of the random initial conditions with different number of particles are shown below. The number of particles 8, 64, 256, 1024, 2048 and set parameter epsilon $\epsilon=0.001$. The seed is 2023.
+
+| Num Particles | dt | Running time (ms) | Time per step (ms) | Energy change |
+| --- | --- | --- | --- | --- |
+| 8 | 0.001 | 368 | 0.0586707 | 1.37388e-05 | 
+| 64 | 0.001 | 5285 | 0.841159 | 0.00055 |
+| 256 | 0.001 | 85023 | 13.5322 | 0.00951 |
+| 1024 | 0.001 | 339742 | 54.0732 | 0.02386 |
 
 
+### 2.4 Parallelizing with OpenMP
+
+#### a) collapse and schedule
+
+***collapse***: Due to the calculation of the acceleration and the update of the position and velocity are dependent for the system in each step, collapse mechanism is not suitable for this case.
+
+***schedule***: each step in a for loop consume the same time, so different schedule mechanism will not affect the running time too much.
+
+#### b) scaling experiment
+`-O2` compiler optimization is used for the following experiments. In our machine we have 5 cores (by command `nproc --all`).
+
+##### Hard-scaling experiment
+
+| OMP_NUM_THREADS | Time (ms) | Speedup |
+| --- | --- | --- |
+| 1 | 85068 | 1 |
+| 2 | 45628 | 1.88 |
+| 3 | 30172 | 2.82 |
+| 4 | 22944 | 3.70 |
+| 5 | 19728 | 4.31 |
+| 10 | 36019 | 2.36 |
+
+##### Weak-scaling experiment
+
+| OMP_NUM_THREADS | Num Particles | Time (ms) | Speedup |
+| --- | --- | --- | --- |
+| 1 | 1024 | 85791 | 1 |
+| 2 | 2048 | 176675 | 0.49 |
+| 3 | 3072 | 269939 | 0.32 |
+| 4 | 4096 | 369939 | 0.24 |
+| 5 | 5120 | 451094 | 0.19 |
+| 10 | 10240 | 1843840 | 0.05 |
