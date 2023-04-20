@@ -57,13 +57,11 @@ void Particle::updateAcceleration(const std::vector<std::shared_ptr<Particle>> &
 {
     Eigen::Vector3d acceleration_sum{0, 0, 0};
     #pragma opm parallel for reduction(+:acceleration_sum) schedule(runtime)
-    for (const auto& p : p_list) //why const auto& p? especially const? ans: change the variable in this only 
+    for (const auto& p : p_list) 
     {
-        // check if p is the same particle as *this
-        // when ==, why output is nan * 3?
         if (p.get() != this)
         {
-            acceleration_sum += calcAcceleration(*this, *p, epsilon); // why *this?
+            acceleration_sum += calcAcceleration(*this, *p, epsilon);
         }
     }
     this->acceleration = acceleration_sum;

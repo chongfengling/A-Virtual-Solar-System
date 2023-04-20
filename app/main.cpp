@@ -14,20 +14,20 @@ int main(int argc, char **argv)
     app.set_version_flag("--version", version);
     // delta time required
     double dt(-1);
-    app.add_option("--dt, --delta_time", dt, "Time step for simulation")->check(CLI::PositiveNumber);
+    app.add_option("--dt, --delta_time", dt, "Time step for simulation, unit is year")->check(CLI::PositiveNumber);
     // use either total time or number of steps
     double year_time(-1);
-    app.add_option("--yt, --year_time", year_time, "Total time for simulation in year")->check(CLI::PositiveNumber);
+    app.add_option("--yt, --year_time", year_time, "Total time for simulation, unit is year")->check(CLI::PositiveNumber);
     int n_steps(-1);
     app.add_option("--ns, --n_steps", n_steps, "The number of simulation steps")->check(CLI::PositiveNumber);
     double epsilon(0);
-    app.add_option("--ep, --epsilon", epsilon, "parameter epsilon for simulation")->check(CLI::PositiveNumber);
+    app.add_option("--ep, --epsilon", epsilon, "parameter epsilon for simulation in the random system")->check(CLI::PositiveNumber);
     std::string task("None");
-    app.add_option("--task", task, "task to run");
+    app.add_option("--task", task, "task to run. (RS: random system, SS: solar system))");
     int n_particles;
     app.add_option("--np, --n_particles", n_particles, "The number of particles in the system")->check(CLI::PositiveNumber);
     int seed(2023);
-    app.add_option("--sd, --seed", seed, "random seed for random initialized system")->check(CLI::PositiveNumber);
+    app.add_option("--sd, --seed", seed, "random seed for random initialized system. (default seed: 2023)")->check(CLI::PositiveNumber);
 
     CLI11_PARSE(app, argc, argv);
 
@@ -49,12 +49,9 @@ int main(int argc, char **argv)
         }
         else
         {
-            // std::count << std::string(dt);
             printf("%f\n", dt);
             printf("%f\n", year_time);
             printf("%d\n", n_steps);
-            // std::count << total_time;
-            // std::count << n_steps;
             std::cerr << "Error: arguments are unacceptable, please refer to the help information '-h'." << std::endl;
             return 1;
         }
@@ -78,7 +75,6 @@ int main(int argc, char **argv)
             std::shared_ptr<RandomSystemGenerator> generator = std::make_shared<RandomSystemGenerator>(n_particles, seed, epsilon);
             std::vector<std::shared_ptr<Particle>> SS_initial = generator->generateInitialConditions();
             double total_energy_initial = calTotalEnergy(SS_initial);
-
             // ! SS_initial will be changed in the update_Solar_System function
             std::vector<std::shared_ptr<Particle>> SS_updated = update_Solar_System(SS_initial, dt, year_time, n_steps, epsilon);
             double total_energy_updated = calTotalEnergy(SS_updated);

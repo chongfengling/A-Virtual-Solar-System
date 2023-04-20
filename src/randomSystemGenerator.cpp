@@ -5,8 +5,6 @@
 
 RandomSystemGenerator::RandomSystemGenerator(int num_planets, int seed, double epsilon) : seed(seed), epsilon(epsilon), num_planets(num_planets)
 {
-    // ?! should initialize p_list here? How to make p_list private?
-    // this->p_list = std::vector<std::shared_ptr<Particle>>();
 }
 
 std::vector<std::shared_ptr<Particle>> RandomSystemGenerator::generateInitialConditions()
