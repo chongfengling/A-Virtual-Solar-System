@@ -45,15 +45,52 @@ The project is split into four main parts aligning with the folder structure des
 You are expected to edit the `CMakeLists.txt` file in each folder to add or remove sources as necessary. For example, if you create a new file `test/particle_test.cpp`, you must add `particle_test.cpp` to the line `add_executable(tests test.cpp)` in `test/CMakeLists.txt`. Please ensure you are comfortable editing these files well before the submission deadline. If you feel you are struggling with the CMake files, please see the Getting Help section of the assignment instructions.
 
 ## Usage Instructions
+### Build
+Use command
+```shell
+rm -r build
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+```
+to clean existing build files and build the project in Release mode.
+### help message
+Refer to the help message for usage instructions by command `./build/solarSystemSimulator --help`
+```shell
+Solar System
+Usage: build/solarSystemSimulator [OPTIONS]
 
-You should fill in the instructions for using the app here.
+Options:
+-h,--help                   Print this help message and exit
 
+--version                   Display program version information and exit
+
+--dt,--delta_time FLOAT:POSITIVE
+                            Time step for simulation, unit is year
+
+--yt,--year_time FLOAT:POSITIVE
+                            Total time for simulation, unit is year
+
+--ns,--n_steps INT:POSITIVE The number of simulation steps
+
+--ep,--epsilon FLOAT:POSITIVE
+                            parameter epsilon for simulation in the random system
+
+--task TEXT                 task to run. (RS: random system, SS: solar system)
+
+--np,--n_particles INT:POSITIVE
+                            The number of particles in the system
+
+--sd,--seed INT:POSITIVE    random seed for random initialized system. (default seed: 2023)
+```
 ## Credits
 
 This project is maintained by Dr. Jamie Quinn as part of UCL ARC's course, Research Computing in C++.
 
 ## Results
 ### 1.3 A Simulation of the Solar System in one year
+```shell
+./build/solarSystemSimulator --task SS --dt 0.00001 --yt 1
+```
 **Task: Solar System**
 - Time step (dt): 1e-05 years/2Pi
 - Total time: 1 year
@@ -88,6 +125,7 @@ This project is maintained by Dr. Jamie Quinn as part of UCL ARC's course, Resea
 
 ### 2.2 Benchmarking the simulation
 Energy changed and time costed after 100 years of simulation with different time step dt
+set `target_compile_options(solarSystemSimulator PUBLIC -O2)` in app/CMakeLists.txt to enable compiler optimization.
 #### 2.2.1 With compiler optimization (8 different dt, total time: 100 years, number of step: 200 $\pi$ / dt)
 | dt | Running time (ms) | Time per step (ms) | Energy change | Number of step |
 | --- | --- | --- | --- | --- |
@@ -124,36 +162,98 @@ With dt=0.001 * $\frac{1}{2\pi}$ year and total time is one year, the simulation
 
 | Num Particles | dt | Running time (ms) | Time per step (ms) | Energy change |
 | --- | --- | --- | --- | --- |
-| 8 | 0.001 | 368 | 0.0586707 | 1.37388e-05 | 
-| 64 | 0.001 | 5285 | 0.841159 | 0.00055 |
-| 256 | 0.001 | 85023 | 13.5322 | 0.00951 |
-| 1024 | 0.001 | 339742 | 54.0732 | 0.02386 |
+| 8 | 0.001 | 38 | 0.0060481 | 1.186e-07 |
+| 64 | 0.001 | 368 | 0.0586707 | 1.373e-05 | 
+| 256 | 0.001 | 5285 | 0.841159 | 0.00055 |
+| 1024 | 0.001 | 85023 | 13.5322 | 0.00951 |
+| 2048 | 0.001 | 339742 | 54.0732 | 0.02386 |
 
+![screenshot3](./assets/2_3_all.png)
 
 ### 2.4 Parallelizing with OpenMP
 
 #### a) collapse and schedule
+```cpp
+std::vector<std::shared_ptr<Particle>> update_Solar_System(std::vector<std::shared_ptr<Particle>> Solar_System, double dt, double total_time, int n_steps, double epsilon)
+{
+    auto start_time = std::chrono::high_resolution_clock::now();
+    #pragma omp parallel
+    for (int n = 0; n < n_steps; n++)
+    {
+        // update the gravitational acceleration of each body
+        #pragma omp for schedule(runtime)
+        for (int i = 0; i < Solar_System.size(); i++)
+        {
+            Solar_System[i]->updateAcceleration(Solar_System, epsilon);
+        }
+        #pragma omp barrier
+        // update the position and velocity of each body
+        #pragma omp for schedule(runtime)
+        for (int j = 0; j < Solar_System.size(); j++)
+        {
+            Solar_System[j]->update(dt);
+        }
+        #pragma omp barrier
+    }
+    ...
+    return Solar_System;
+}
+```
+The loop in function `uodate_Solar_System` is parallelized with OpenMP as its running time is the bottleneck of the whole program as the number of particle increases.
 
-***collapse***: Due to the calculation of the acceleration and the update of the position and velocity are dependent for the system in each step, collapse mechanism is not suitable for this case.
+***collapse***: Due to the calculation of the acceleration and the update of the position and velocity are dependent for the system in each step and not in a nest for loop, collapse mechanism is not suitable for this case.
 
-***schedule***: each step in a for loop consume the same time, so different schedule mechanism will not affect the running time too much.
+***schedule***: The `schedule(runtime)` is used to let the compiler decide the best schedule for each loop. Each step in a for loop consume the same time, so different schedule mechanism will not affect the running time too much. This conclusion is verified by the following experiments.
+```shell
+rm -r build
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+OMP_SCHEDULE="dynamic, 4" build/solarSystemSimulator --dt 0.001 --yt 1 --task RS --np 8 --ep 0.001
+```
+`dynamic` can be replaced by `static` and `guided`.
 
 #### b) scaling experiment
-`-O2` compiler optimization is used for the following experiments. In our machine we have 5 cores (by command `nproc --all`).
+`-O2` compiler optimization is used for the following experiments. In our machine we have 5 cores (by command `nproc --all`). All the experiments are run with seed=2023.
 
 ##### Hard-scaling experiment
 
+```shell
+rm -r build
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+for n in 1 2 3 4 5 10;
+do OMP_NUM_THREADS=$n build/solarSystemSimulator --dt 0.001 --yt 1 --task RS --np 1024 --ep 0.001;
+done
+```
 | OMP_NUM_THREADS | Time (ms) | Speedup |
 | --- | --- | --- |
-| 1 | 85068 | 1 |
-| 2 | 45628 | 1.88 |
-| 3 | 30172 | 2.82 |
-| 4 | 22944 | 3.70 |
-| 5 | 19728 | 4.31 |
-| 10 | 36019 | 2.36 |
+| 1 | 84397 | 1 |
+| 2 | 43765 | 1.88 |
+| 3 | 30248 | 2.82 |
+| 4 | 22914 | 3.70 |
+| 5 | 19187 | 4.31 |
+| 10 | 21016 | 4.02 |
+
+![screenshot3](./assets/2_3_hard.png)
+
+**Analysis**:
+1. As the number of threads is increased, the time taken for execution generally decreases, and the speedup increases. This indicates that the program is benefiting from parallelism and utilizing the available cores efficiently.
+2. The highest speedup is observed with 5 threads (OMP_NUM_THREADS=5), with a speedup of 4.31 and execution time of 19,187 ms.
+3. Increasing the number of threads to 10 (OMP_NUM_THREADS=10) seems to have a negative impact on performance. The execution time increases to 21,016 ms, and the speedup drops to 4.02. Perhaps the COU is throttling its speed to control its temperature, or the overhead of creating and managing threads is too high.
+4. Another possible reason for the unexpected decreasing with 10 threads is we here only parallelize the part of the program and with more threads, some other parts of the program may be the bottleneck of the whole program.
+
 
 ##### Weak-scaling experiment
-
+```shell
+rm -r build
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+for i in 1 2 3 4 5 10;
+do 
+    echo "OMP_NUM_THREADS=$i"
+    OMP_NUM_THREADS=$i build/solarSystemSimulator --dt 0.001 --yt 1 --task RS --np $((1024 * i)) --ep 0.001;
+done
+```
 | OMP_NUM_THREADS | Num Particles | Time (ms) | Speedup |
 | --- | --- | --- | --- |
 | 1 | 1024 | 85791 | 1 |
@@ -162,3 +262,23 @@ With dt=0.001 * $\frac{1}{2\pi}$ year and total time is one year, the simulation
 | 4 | 4096 | 369939 | 0.24 |
 | 5 | 5120 | 451094 | 0.19 |
 | 10 | 10240 | 1843840 | 0.05 |
+
+![screenshot3](./assets/2_3_all.png)
+
+**Analysis**:
+1. As the number of threads is increased, the time taken for execution increases linearly as the performance should scale with the number of particles. That is , though the number of threads is doubled, the number of particles is also doubled, which makes the total work be four times as much as before.
+
+#### c) Energy parallelization
+```cpp
+double calTotalEnergy(const std::vector<std::shared_ptr<Particle>> &Solar_System)
+{
+    double total_energy(0);
+    #pragma omp parallel for reduction(+:total_energy) schedule(runtime)
+    for (int i = 0; i < Solar_System.size(); i++)
+    {
+        total_energy += (Solar_System[i]->calKineticEnergy() + Solar_System[i]->calPotentialEnergy(Solar_System));
+    }
+    return total_energy;
+}
+```
+

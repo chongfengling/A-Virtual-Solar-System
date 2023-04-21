@@ -27,7 +27,6 @@ std::vector<std::shared_ptr<Particle>> update_Solar_System(std::vector<std::shar
         #pragma omp for schedule(runtime)
         for (int i = 0; i < Solar_System.size(); i++)
         {
-            // ? What is epsilon, 0 or 1? 0 works for test case 'a simple Solar System (the Sun and the Earth only)'
             Solar_System[i]->updateAcceleration(Solar_System, epsilon);
         }
         #pragma omp barrier
