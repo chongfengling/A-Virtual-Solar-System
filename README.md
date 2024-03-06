@@ -1,4 +1,7 @@
 # A Virtual Solar System
+This archive contains the finalized individual project completed during the 2022-2023 session of the "[Research Computing with C++](https://www.ucl.ac.uk/module-catalogue/modules/research-computing-with-c-COMP0210)" module.
+
+---
 
 This is the starting repository for assignment 2 of PHAS0100: Research Computing with C++. You may add or remove C++ files in any directory. You should organise the files as you see fit but do read the Folder Structure section below to understand the intended use of the existing folders.
 
